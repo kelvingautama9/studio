@@ -31,8 +31,9 @@ export function MoqCalculatorForm() {
     name: "rows",
   });
 
-  const watchedValues = useWatch({
+  const watchedRows = useWatch({
     control: form.control,
+    name: "rows"
   });
 
   return (
@@ -46,8 +47,10 @@ export function MoqCalculatorForm() {
             <span></span>
           </div>
           {fields.map((field, index) => {
-            const rowValues = watchedValues.rows?.[index];
-            const rowMOQ = rowValues && rowValues.panjang && rowValues.lebar ? calculateMOQ({ panjang: rowValues.panjang, lebar: rowValues.lebar }) : 0;
+            const rowValues = watchedRows?.[index];
+            const panjang = Number(rowValues?.panjang) || 0;
+            const lebar = Number(rowValues?.lebar) || 0;
+            const rowMOQ = panjang > 0 && lebar > 0 ? calculateMOQ({ panjang, lebar }) : 0;
 
             return (
               <div key={field.id} className="grid grid-cols-[1fr_1fr_1fr_80px] gap-x-4 items-start bg-accent/20 dark:bg-accent/10 p-2 rounded-lg">
@@ -75,5 +78,3 @@ export function MoqCalculatorForm() {
     </Form>
   );
 }
-
-    
