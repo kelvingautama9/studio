@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useForm, useFieldArray, useWatch } from "react-hook-form";
@@ -8,7 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { PlusCircle, Trash2 } from "lucide-react";
-import { calculateTonnage, FLUTE_TAKEUP_FACTORS } from "@/lib/calculations";
+import { calculateTonnage } from "@/lib/calculations";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 
@@ -21,6 +22,8 @@ const formSchema = z.object({
     quantity: z.coerce.number().min(1, "Required"),
   })),
 });
+
+const fluteOptions = ["B", "C", "BC"];
 
 export function TonnageCalculatorForm() {
   const form = useForm<z.infer<typeof formSchema>>({
@@ -66,12 +69,12 @@ export function TonnageCalculatorForm() {
               <div key={field.id} className="grid grid-cols-[2fr_2fr_3fr_1fr_2fr_2fr_1fr] gap-x-4 items-start bg-accent/20 dark:bg-accent/10 p-2 rounded-lg">
                 <FormField control={form.control} name={`rows.${index}.panjang`} render={({ field }) => <FormItem><FormControl><Input {...field} type="number" placeholder="1200" /></FormControl><FormMessage/></FormItem>} />
                 <FormField control={form.control} name={`rows.${index}.lebar`} render={({ field }) => <FormItem><FormControl><Input {...field} type="number" placeholder="800" /></FormControl><FormMessage/></FormItem>} />
-                <FormField control={form.control} name={`rows.${index}.substance`} render={({ field }) => <FormItem><FormControl><Input {...field} placeholder="125/110/125" /></FormControl><FormMessage/></FormItem>} />
+                <FormField control={form.control} name={`rows.${index}.substance`} render={({ field }) => <FormItem><FormControl><Input {...field} placeholder="K125/M125/K125" /></FormControl><FormMessage/></FormItem>} />
                 <FormField control={form.control} name={`rows.${index}.flute`} render={({ field }) => (
                   <FormItem>
                     <Select onValueChange={field.onChange} defaultValue={field.value}>
                       <FormControl><SelectTrigger><SelectValue /></SelectTrigger></FormControl>
-                      <SelectContent>{Object.keys(FLUTE_TAKEUP_FACTORS).map(f => <SelectItem key={f} value={f}>{f}</SelectItem>)}</SelectContent>
+                      <SelectContent>{fluteOptions.map(f => <SelectItem key={f} value={f}>{f}</SelectItem>)}</SelectContent>
                     </Select>
                   </FormItem>
                 )} />
@@ -114,3 +117,5 @@ export function TonnageCalculatorForm() {
     </Form>
   );
 }
+
+    

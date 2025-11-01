@@ -1,10 +1,11 @@
+
 import { MoqCalculatorForm } from "@/components/calculators/moq-form";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Package } from "lucide-react";
 
 export default function MoqCalculatorPage() {
     return (
-        <div className="max-w-4xl mx-auto animate-in fade-in duration-500">
+        <div className="max-w-2xl mx-auto animate-in fade-in duration-500">
             <Card className="bg-card/50 backdrop-blur-sm">
                 <CardHeader className="flex flex-row items-center gap-4">
                     <div className="bg-primary/20 text-primary rounded-lg p-3 w-fit">
@@ -12,7 +13,7 @@ export default function MoqCalculatorPage() {
                     </div>
                     <div>
                         <CardTitle className="text-2xl">MOQ Calculator</CardTitle>
-                        <CardDescription>Determine the Minimum Order Quantity (MOQ) in sheets based on a minimum tonnage.</CardDescription>
+                        <CardDescription>Determine the Minimum Order Quantity (MOQ) based on sheet dimensions.</CardDescription>
                     </div>
                 </CardHeader>
                 <CardContent>
@@ -22,3 +23,5 @@ export default function MoqCalculatorPage() {
         </div>
     );
 }
+
+    
