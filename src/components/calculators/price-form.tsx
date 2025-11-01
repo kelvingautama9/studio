@@ -65,7 +65,7 @@ export function PriceCalculatorForm() {
             <span>Width (mm)</span>
             <span>Substance</span>
             <span>F</span>
-            <span>Discount %</span>
+            <span>Disc</span>
             <span className="text-right">Price / MOQ</span>
             <span></span>
           </div>
