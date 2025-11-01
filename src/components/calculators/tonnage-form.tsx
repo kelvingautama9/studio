@@ -58,7 +58,7 @@ export function TonnageCalculatorForm() {
             <span>Substance</span>
             <span>Flute</span>
             <span>Quantity</span>
-            <span className="text-right">Tonnage</span>
+            <span className="text-right">Weight</span>
             <span></span>
           </div>
           {fields.map((field, index) => {
@@ -72,7 +72,15 @@ export function TonnageCalculatorForm() {
                 <FormField control={form.control} name={`rows.${index}.substance`} render={({ field }) => <FormItem><FormControl><Input {...field} placeholder="K125/M125/K125" /></FormControl><FormMessage/></FormItem>} />
                 <FormField control={form.control} name={`rows.${index}.flute`} render={({ field }) => (
                   <FormItem>
-                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <Select onValueChange={(value) => {
+                        field.onChange(value);
+                        const paperWeights = (form.getValues(`rows.${index}.substance`)).split('/').length;
+                        if (value === 'BC' && paperWeights < 5) {
+                            form.setValue(`rows.${index}.substance`, '150/120/110/120/150');
+                        } else if (['B', 'C'].includes(value) && paperWeights > 3) {
+                            form.setValue(`rows.${index}.substance`, '125/110/125');
+                        }
+                    }} defaultValue={field.value}>
                       <FormControl><SelectTrigger><SelectValue /></SelectTrigger></FormControl>
                       <SelectContent>{fluteOptions.map(f => <SelectItem key={f} value={f}>{f}</SelectItem>)}</SelectContent>
                     </Select>
@@ -94,7 +102,7 @@ export function TonnageCalculatorForm() {
           })}
         </div>
 
-        <Button type="button" variant="outline" size="sm" onClick={() => append({ panjang: 0, lebar: 0, substance: "", flute: "B", quantity: 0 })}>
+        <Button type="button" variant="outline" size="sm" onClick={() => append({ panjang: 0, lebar: 0, substance: "125/110/125", flute: "B", quantity: 0 })}>
           <PlusCircle className="mr-2 h-4 w-4" /> Add Row
         </Button>
         
@@ -117,5 +125,3 @@ export function TonnageCalculatorForm() {
     </Form>
   );
 }
-
-    
