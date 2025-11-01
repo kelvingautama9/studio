@@ -183,6 +183,7 @@ const priceList: Record<string, Record<string, number>> = {
 
 // gramLiner1/gramFlute1/gramLiner2/gramFlute2/...
 const parseSubstance = (substance: string): number[] => {
+    if (!substance) return [];
     return substance.split('/').map(s => parseInt(s.replace(/[A-Za-z]/g, ''))).filter(n => !isNaN(n));
 }
 
@@ -193,7 +194,7 @@ export const calculateGrammage = (substance: string, flute: string): number => {
     // Single Wall e.g., 125/110/125 for B flute
     if (paperWeights.length === 3 && ['B', 'C'].includes(flute)) {
         const [liner1, gramFlute, liner2] = paperWeights;
-        const takeup = flute === 'B' ? 1.35 : 1.43;
+        const takeup = flute === 'B' ? FLUTE_TAKEUP_FACTORS['B'] : FLUTE_TAKEUP_FACTORS['C'];
         return liner1 + (gramFlute * takeup) + liner2;
     }
 
@@ -201,11 +202,32 @@ export const calculateGrammage = (substance: string, flute: string): number => {
     if (paperWeights.length === 5 && flute === 'BC') {
         const [liner1, gramFlute1, liner2, gramFlute2, liner3] = paperWeights;
         // B Flute takeup * C Flute takeup
-        return liner1 + (gramFlute1 * 1.35) + liner2 + (gramFlute2 * 1.43) + liner3;
+        return liner1 + (gramFlute1 * FLUTE_TAKEUP_FACTORS['B']) + liner2 + (gramFlute2 * FLUTE_TAKEUP_FACTORS['C']) + liner3;
     }
     
     // Fallback for other cases not specified in the python script, like single face
-    return paperWeights.reduce((acc, val) => acc + val, 0);
+    if (paperWeights.length > 0) {
+        let totalGrammage = 0;
+        // Assuming alternating liner and flute
+        for (let i = 0; i < paperWeights.length; i++) {
+            if (i % 2 === 1) { // Flute layer
+                if (flute === 'B' || flute === 'C') {
+                    totalGrammage += paperWeights[i] * (FLUTE_TAKEUP_FACTORS[flute] || 1);
+                } else if (flute === 'BC') {
+                     // rough approximation for unknown flute layers in BC
+                    const takeup = i === 1 ? FLUTE_TAKEUP_FACTORS['B'] : FLUTE_TAKEUP_FACTORS['C'];
+                    totalGrammage += paperWeights[i] * takeup;
+                } else {
+                    totalGrammage += paperWeights[i];
+                }
+            } else { // Liner layer
+                totalGrammage += paperWeights[i];
+            }
+        }
+        return totalGrammage;
+    }
+
+    return 0;
 };
 
 export const calculateTonnage = ({
@@ -221,7 +243,7 @@ export const calculateTonnage = ({
     flute: string;
     quantity: number;
 }): number => {
-    if (panjang <= 0 || lebar <= 0 || quantity <= 0) return 0;
+    if (panjang <= 0 || lebar <= 0 || quantity <= 0 || !substance || !flute) return 0;
 
     const grammage = calculateGrammage(substance, flute);
     if(grammage === 0) return 0;
@@ -252,12 +274,25 @@ export const calculatePrice = ({
         return 0;
     }
 
-    const fluteKey = `Flute_${flute}`;
+    const fluteKey = `Flute_${flute.toUpperCase()}`;
     const priceData = priceList[substance.toUpperCase()];
 
-    if (!priceData || !priceData[fluteKey]) {
-        return 0; // Or handle as an error, price not found
+    if (flute === 'BC' || !priceData || !priceData[fluteKey]) {
+        // For BC flute, or if price not found, calculate based on grammage
+        const grammage = calculateGrammage(substance, flute);
+        if (grammage === 0) return 0;
+        
+        // This is a fallback estimation. You might want a more precise formula.
+        // Let's assume a base price per kg and calculate from there.
+        // Example: 20000 IDR per kg of grammage. This is a placeholder.
+        const pricePerKg = 15; // Placeholder price per grammage point
+        const pricePerMeter = grammage * pricePerKg;
+        const hargaTotal = (panjang * lebar / 1000000) * pricePerMeter;
+        const diskonValue = isNaN(diskon) ? 0 : diskon;
+        const hargaSetelahDiskon = hargaTotal * (1 - diskonValue / 100);
+        return Math.round(hargaSetelahDiskon);
     }
+
 
     const hargaPerMeter = priceData[fluteKey];
     const hargaTotal = (panjang * lebar / 1000000) * hargaPerMeter;
@@ -273,6 +308,9 @@ const hitungOut = (lebar: number): number => {
     if (lebar < 315) {
         return 7;
     }
+    if (lebar > 2480) { // Constraint from your python script logic
+        return 0;
+    }
     return Math.floor(2480 / lebar);
 }
 
@@ -287,8 +325,7 @@ export const calculateMOQ = ({
         return 0;
     }
     const out = hitungOut(lebar);
+    if (out === 0) return Infinity; // Indicates not manufacturable
     const moq = Math.ceil((500000 / panjang) * out);
     return moq;
 };
-
-    
