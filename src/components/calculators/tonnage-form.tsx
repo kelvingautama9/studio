@@ -29,7 +29,7 @@ export function TonnageCalculatorForm() {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      rows: [{ panjang: 0, lebar: 0, substance: "125/110/125", flute: "B", quantity: 0 }],
+      rows: [{ panjang: 0, lebar: 0, substance: "", flute: "B", quantity: 0 }],
     },
   });
 
@@ -56,7 +56,7 @@ export function TonnageCalculatorForm() {
             <span>Length (mm)</span>
             <span>Width (mm)</span>
             <span>Substance</span>
-            <span>Flute</span>
+            <span>F</span>
             <span>Quantity</span>
             <span className="text-right">Weight (tonnes)</span>
             <span></span>
@@ -127,5 +127,3 @@ export function TonnageCalculatorForm() {
     </Form>
   );
 }
-
-    
