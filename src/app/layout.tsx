@@ -8,7 +8,7 @@ import { Package2 } from 'lucide-react';
 import Link from 'next/link';
 
 export const metadata: Metadata = {
-  title: 'Carton Sheet Calc',
+  title: 'Vinns Carton Sheet Calculator',
   description: 'Calculators for the carton sheet industry',
 };
 
@@ -32,7 +32,7 @@ export default function RootLayout({
                         <Link href="/" className="flex items-center gap-2">
                             <Package2 className="h-8 w-8 text-primary" />
                             <h2 className="text-lg font-semibold tracking-tight text-foreground">
-                                CartonCalc
+                                VinnsCalc
                             </h2>
                         </Link>
                     </SidebarHeader>

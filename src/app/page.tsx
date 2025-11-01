@@ -23,7 +23,7 @@ export default function Home() {
         )}
         <div className="absolute inset-0 bg-gradient-to-t from-background/90 via-background/50 to-transparent" />
         <div className="absolute bottom-0 left-0 p-6 md:p-8">
-            <h1 className="text-4xl md:text-5xl font-bold tracking-tighter text-foreground">Welcome to Carton Sheet Calc</h1>
+            <h1 className="text-4xl md:text-5xl font-bold tracking-tighter text-foreground">Vinns Carton Sheet Calculator</h1>
             <p className="mt-2 text-md md:text-lg text-muted-foreground max-w-2xl">
                 Your all-in-one toolkit for carton sheet calculations. Streamline your workflow with our precise and easy-to-use calculators.
             </p>
